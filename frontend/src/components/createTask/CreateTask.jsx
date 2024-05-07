@@ -125,7 +125,7 @@ function CreateTask({ description, setDescription, layoutState, setLayoutState, 
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
               Add
-              {/* {layoutState==2?"Edit" : "Add"} */}
+              {}
             </button>}
 
             {layoutState==2 && <button
@@ -133,7 +133,7 @@ function CreateTask({ description, setDescription, layoutState, setLayoutState, 
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
               Edit
-              {/* {layoutState==2?"Edit" : "Add"} */}
+              {}
             </button>}
             {layoutState==2 && <button
               type="cancel"
