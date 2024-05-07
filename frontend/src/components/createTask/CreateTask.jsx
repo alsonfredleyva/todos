@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+
 import { useContext } from 'react';
 import TaskContext from '../../context/TaskContext';
 import TokenContext from '../../context/TokenContext';
@@ -14,7 +14,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
   const handleAdd = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post(
+      await axios.post(
         '/task/addTask',
         { title, description },
         {
@@ -44,7 +44,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
     console.log("klklkl")
     e.preventDefault();
     try {
-      const res = await axios.post(
+      await axios.post(
         `/task/updatetask?id=${editorId}`,
         { title, description },
         {
@@ -65,7 +65,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
     setDescription("")
     setLayoutState(1)
 
-    alert("task edited");
+      
   }
 
   // const showToast = () => {
@@ -107,7 +107,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
             />
           </div>
           <div className="flex justify-center">
-            {layoutState==1 && <button
+            {layoutState===1 && <button
               type="submit"
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
@@ -115,14 +115,14 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
               {/* {layoutState==2?"Edit" : "Add"} */}
             </button>}
 
-            {layoutState==2 && <button
+            {layoutState===2 && <button
               onClick={handleEdit}
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
               Edit
               {/* {layoutState==2?"Edit" : "Add"} */}
             </button>}
-            {layoutState==2 && <button
+            {layoutState===2 && <button
               type="cancel"
               className=" bg-red-700 rounded-md text-white px-5 py-1 mx-2 "
               onClick={()=>
