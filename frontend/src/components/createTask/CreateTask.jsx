@@ -1,20 +1,38 @@
-
-import { useContext } from 'react';
+import React, { useState, useContext, useReducer } from 'react';
 import TaskContext from '../../context/TaskContext';
 import TokenContext from '../../context/TokenContext';
 import axios from '../../Axios/axios.js';
 import './createTask.css';
 
-function CreateTask({title, setTitle, description, setDescription, layoutState, setLayoutState,editorId}) {
-  const { dispatch,  } = useContext(TaskContext);
+function CreateTask({ description, setDescription, layoutState, setLayoutState, editorId }) {
+  const { dispatch } = useContext(TaskContext);
   const { userToken } = useContext(TokenContext);
-  // const [title, setTitle] = useState('');
-  
-  // const [toast, setToast] = useState();
+
+  const initialState = {
+    toastMessage: ''
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'SHOW_TOAST':
+        return {
+          ...state,
+          toastMessage: action.message
+        };
+      default:
+        return state;
+    }
+  };
+
+  const [state, localDispatch] = useReducer(reducer, initialState);
+  const { toastMessage } = state;
+
+  const [title, setTitle] = useState('');
+
   const handleAdd = async e => {
     e.preventDefault();
     try {
-      await axios.post(
+      const res = await axios.post(
         '/task/addTask',
         { title, description },
         {
@@ -23,8 +41,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
           },
         },
       );
-      //setToast(res.data)
-      // showToast();
+      localDispatch({ type: 'SHOW_TOAST', message: res.data });
     } catch (error) {
       console.log(error);
     }
@@ -35,13 +52,10 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
     });
     setTitle('');
     setDescription('');
-
     alert("Task added!");
   };
 
-  const handleEdit = async (e)=>
-  {
-    console.log("klklkl")
+  const handleEdit = async (e) => {
     e.preventDefault();
     try {
       await axios.post(
@@ -53,30 +67,29 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
           },
         },
       );
-      
+
     } catch (error) {
-      
+
     }
     dispatch({
       type: 'EDIT_TASK',
-      id:editorId
+      id: editorId
     });
     setTitle("")
     setDescription("")
     setLayoutState(1)
-
-      
   }
 
-  // const showToast = () => {
-  //     const toast = document.getElementById('toast');
-  //     toast.style.display = "block"
-  //     setTimeout(hideToast,2000)
-  // }
-  // const hideToast = () => {
-  //     const toast = document.getElementById('toast');
-  //     toast.style.display = "none"
-  // }
+  const showToast = () => {
+    const toast = document.getElementById('toast');
+    toast.style.display = "block"
+    setTimeout(hideToast, 2000)
+  }
+  const hideToast = () => {
+    const toast = document.getElementById('toast');
+    toast.style.display = "none"
+  }
+
   return (
     <div className="addContainer md:w-1/3 md:mx-auto mx-3 mt-3 flex justify-center">
       <div className="w-11/12">
@@ -107,7 +120,7 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
             />
           </div>
           <div className="flex justify-center">
-            {layoutState===1 && <button
+            {layoutState==1 && <button
               type="submit"
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
@@ -115,14 +128,14 @@ function CreateTask({title, setTitle, description, setDescription, layoutState, 
               {/* {layoutState==2?"Edit" : "Add"} */}
             </button>}
 
-            {layoutState===2 && <button
+            {layoutState==2 && <button
               onClick={handleEdit}
               className=" bg-blue-700 rounded-md text-white px-5 py-1 "
             >
               Edit
               {/* {layoutState==2?"Edit" : "Add"} */}
             </button>}
-            {layoutState===2 && <button
+            {layoutState==2 && <button
               type="cancel"
               className=" bg-red-700 rounded-md text-white px-5 py-1 mx-2 "
               onClick={()=>
