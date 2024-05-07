@@ -32,15 +32,17 @@
     ]
   },
   "browserslist": {
-  "production": [
-    "defaults"
-  ],
-  "development": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions",
-    "last 2 Safari versions"
-  ]
-},
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 2 chrome version",
+      "last 2 firefox version",
+      "last 2 safari version"
+    ]
+  },
   "devDependencies": {
     "tailwindcss": "^3.2.4"
   }
