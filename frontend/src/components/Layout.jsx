@@ -2,7 +2,6 @@ import React from 'react';
 import TaskIndicator from './TaskIndicator';
 import CreateTask from './createTask/CreateTask';
 import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
 function Layout({title,setTitle, description, setDescription,layoutState,setlayoutState,editorId}) {
     
     return (
