@@ -14,7 +14,7 @@ function Task({ task, id, title,setTitle, description,setDescription, layoutStat
   const handleRemove = async e => {
     e.preventDefault();
     alert("Task Deleted!");
-    await axios.delete('https://todos-production-e6fd.up.railway.app/api/task/removeTask', {
+    await axios.delete('https://todos-tath.onrender.com/api/task/removeTask', {
       headers: { Authorization: `Bearer ${userToken}` },
       data: { id: task._id },
     });
