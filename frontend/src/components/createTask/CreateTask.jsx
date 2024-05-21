@@ -1,61 +1,40 @@
-import React, { useState, useContext, useReducer } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import TaskContext from '../../context/TaskContext';
 import TokenContext from '../../context/TokenContext';
 import axios from '../../Axios/axios.js';
 import './createTask.css';
 
-function CreateTask({ description, setDescription, layoutState, setLayoutState, editorId }) {
+function CreateTask({ title, setTitle, description, setDescription, layoutState, setLayoutState, editorId }) {
   const { dispatch } = useContext(TaskContext);
   const { userToken } = useContext(TokenContext);
 
-  const initialState = {
-    toastMessage: ''
-  };
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case 'SHOW_TOAST':
-        return {
-          ...state,
-          toastMessage: action.message
-        };
-      default:
-        return state;
-    }
-  };
-
-  const [state, localDispatch] = useReducer(reducer, initialState);
-  const { toastMessage } = state;
-
-  const [title, setTitle] = useState('');
-
-  const handleAdd = async e => {
+  // useCallback to memoize handlers to avoid unnecessary re-renders
+  const handleAdd = useCallback(async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
+      await axios.post(
         '/task/addTask',
         { title, description },
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
-        },
+        }
       );
-      localDispatch({ type: 'SHOW_TOAST', message: res.data });
+      dispatch({
+        type: 'ADD_TASK',
+        title,
+        description,
+      });
+      setTitle('');
+      setDescription('');
+      alert('Task added!');
     } catch (error) {
       console.log(error);
     }
-    dispatch({
-      type: 'ADD_TASK',
-      title,
-      description,
-    });
-    setTitle('');
-    setDescription('');
-    alert("Task added!");
-  };
+  }, [title, description, userToken, dispatch, setTitle, setDescription]);
 
-  const handleEdit = async (e) => {
+  const handleEdit = useCallback(async (e) => {
     e.preventDefault();
     try {
       await axios.post(
@@ -65,30 +44,27 @@ function CreateTask({ description, setDescription, layoutState, setLayoutState, 
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
-        },
+        }
       );
-
+      dispatch({
+        type: 'EDIT_TASK',
+        id: editorId,
+      });
+      setTitle('');
+      setDescription('');
+      setLayoutState(1);
     } catch (error) {
-
+      console.log(error);
     }
-    dispatch({
-      type: 'EDIT_TASK',
-      id: editorId
-    });
-    setTitle("")
-    setDescription("")
-    setLayoutState(1)
-  }
+  }, [title, description, userToken, editorId, dispatch, setTitle, setDescription, setLayoutState]);
 
-  const showToast = () => {
-    const toast = document.getElementById('toast');
-    toast.style.display = "block"
-    setTimeout(hideToast, 2000)
-  }
-  const hideToast = () => {
-    const toast = document.getElementById('toast');
-    toast.style.display = "none"
-  }
+  // useEffect for cleanup
+  useEffect(() => {
+    return () => {
+      // Perform any necessary cleanup here
+      // e.g., cancel ongoing async operations if applicable
+    };
+  }, []);
 
   return (
     <div className="addContainer md:w-1/3 md:mx-auto mx-3 mt-3 flex justify-center">
@@ -102,7 +78,7 @@ function CreateTask({ description, setDescription, layoutState, setLayoutState, 
               id="title"
               value={title}
               required
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
@@ -114,47 +90,37 @@ function CreateTask({ description, setDescription, layoutState, setLayoutState, 
               id="description"
               value={description}
               required
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               style={{ resize: 'none' }}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
           <div className="flex justify-center">
-            {layoutState==1 && <button
-              type="submit"
-              className=" bg-blue-700 rounded-md text-white px-5 py-1 "
-            >
-              Add
-              {}
-            </button>}
-
-            {layoutState==2 && <button
-              onClick={handleEdit}
-              className=" bg-blue-700 rounded-md text-white px-5 py-1 "
-            >
-              Edit
-              {}
-            </button>}
-            {layoutState==2 && <button
-              type="cancel"
-              className=" bg-red-700 rounded-md text-white px-5 py-1 mx-2 "
-              onClick={()=>
-              {
-                setTitle("")
-                setDescription("")
-                setLayoutState(1)
-              }}
-            >
-              Cancel
-            </button>}
+            {layoutState === 1 && (
+              <button type="submit" className="bg-blue-700 rounded-md text-white px-5 py-1">
+                Add
+              </button>
+            )}
+            {layoutState === 2 && (
+              <>
+                <button onClick={handleEdit} className="bg-blue-700 rounded-md text-white px-5 py-1">
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="bg-red-700 rounded-md text-white px-5 py-1 mx-2"
+                  onClick={() => {
+                    setTitle('');
+                    setDescription('');
+                    setLayoutState(1);
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
           </div>
         </form>
-        <div
-          className="toast bg-green-600 text-white p-3 rounded-xl shadow-2xl text-center absolute bottom-4 left-1/2 -translate-x-1/2"
-          id="toast"
-        >
-          <p>This is test</p>
-        </div>
       </div>
     </div>
   );
