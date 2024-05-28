@@ -32,7 +32,7 @@ function App() {
             Authorization: `Bearer ${userToken}`
           }
         })
-        tokenDispatch({type: "SET_TOKEN", payload: res.token})
+        //tokenDispatch({type: "SET_TOKEN", payload: res.token})
         console.log("res.data: ", res.data);
         userDispatch({ type: "SET_USER", payload: res.data.user })
       } catch (error) {
@@ -66,6 +66,16 @@ function App() {
   const [description, setDescription] = useState('');
 
   const [editorId, setEditorId] = useState("")
+
+  // useEffect(() => {
+
+  
+  //   return () => {
+      
+  //   }
+  // }, [layoutState])
+  
+
   return (
     <BrowserRouter>
       <TokenContext.Provider value={{ userToken, tokenDispatch, user, userDispatch }}>
@@ -85,7 +95,6 @@ function App() {
           </Routes>
         </TaskContext.Provider>
       </TokenContext.Provider>
-
     </BrowserRouter>
   );
 }
