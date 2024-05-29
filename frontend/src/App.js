@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Active from './components/Active';
 import Completed from './components/Completed';
@@ -17,12 +17,13 @@ import ForgotPassword from './components/forgotPassword/ForgotPassword';
 import ResetPassword from './components/forgotPassword/ResetPassword';
 import axios from './Axios/axios.js';
 import ChatBot from 'react-simple-chatbot';
+
 function App() {
   const token = JSON.parse(localStorage.getItem("authToken"));
   const [tasks, dispatch] = useReducer(taskReducer, [])
   const [userToken, tokenDispatch] = useReducer(tokenReducer, token)
   const [user, userDispatch] = useReducer(userReducer, {})
-  const [layoutState, setlayoutState] = useState(1)
+  
   useEffect(() => {
     console.log("App.js");
     const fetchUser = async () => {
@@ -35,7 +36,7 @@ function App() {
         })
         //tokenDispatch({type: "SET_TOKEN", payload: res.token})
         console.log("res.data: ", res.data);
-        userDispatch({ type: "SET_USER", payload: res.data.user })
+        userDispatch({type: "SET_USER", payload: res.data.user})
       } catch (error) {
         console.log(error);
       }
@@ -44,6 +45,7 @@ function App() {
       fetchUser()
     }
   }, [userToken])
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -61,21 +63,7 @@ function App() {
     if (userToken) {
       fetchTasks()
     }
-  }, [userToken,layoutState])
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-
-  const [editorId, setEditorId] = useState("")
-
-  // useEffect(() => {
-
-  
-  //   return () => {
-      
-  //   }
-  // }, [layoutState])
-  
+  }, [userToken])
 
   return (
     <BrowserRouter>
@@ -83,9 +71,9 @@ function App() {
         <TaskContext.Provider value={{ tasks, dispatch }}>
           <Routes>
             <Route path="/" element={<Header />}>
-              <Route path='/' element={token ? <Layout title={title} setTitle={setTitle} description={description} setDescription={setDescription} layoutState={layoutState} setlayoutState={setlayoutState} editorId={editorId}  /> : <Login />}>
-                <Route index element={<AllTask title={title} setTitle={setTitle} description={description} setDescription={setDescription} layoutState={layoutState} setlayoutState={setlayoutState} setEditorId={setEditorId} />} />
-                <Route path="active" element={<Active title={title} setTitle={setTitle} description={description} setDescription={setDescription} layoutState={layoutState} setlayoutState={setlayoutState} setEditorId={setEditorId} />} />
+              <Route path='/' element={token ? <Layout /> : <Login />}>
+                <Route index element={<AllTask />} />
+                <Route path="active" element={<Active />} />
                 <Route path="completed" element={<Completed />} />
               </Route>
               <Route path="/login" element={<Login />} />
@@ -95,6 +83,8 @@ function App() {
             </Route>
           </Routes>
           <ChatBot
+          headerTitle="Desired Programming Bot"
+          speechSynthesis={{ enable: true, lang: 'en' }}
             steps={[
               {
                 id: '1',
@@ -120,7 +110,7 @@ function App() {
                 id: '5',
                 options: [
                   { value: 1, label: 'Number 1, What is the purpose of this todo app?', trigger: '6' },
-                  { value: 2, label: 'Number 2, How Can I Contact the admins here?', trigger: '7' },
+                  { value: 2, label: 'Number 2, How Can I Contact the admins here?', trigger: '13' },
                   { value: 3, label: 'Number 3, Can I add todos anytime?', trigger: '8' },
                 ],
               },
@@ -162,6 +152,11 @@ function App() {
                 id: '12',
                 message: 'fb/Arjeeyorong22',
                 trigger: 5,
+              },
+              {
+                id: '13',
+                message: 'you can pick any admin from admin 1 to 4',
+                trigger: 7,
               },
             ]}
             floating={true}
